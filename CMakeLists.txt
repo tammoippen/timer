@@ -32,9 +32,14 @@ set( TIMER_VERSION_MINOR 0 )
 set( TIMER_VERSION_PATCH 0 )
 set( TIMER_VERSION ${TIMER_VERSION_MAJOR}.${TIMER_VERSION_MINOR}.${TIMER_VERSION_PATCH} )
 
-set( enable_timing ON CACHE STRING "En/Disable timing altogether. [default=ON]" )
-if ( enable_timing )
+set( enable-timing ON CACHE STRING "En/Disable timing altogether. [default=ON]" )
+if ( enable-timing )
   set( ENABLE_TIMING ON )
+endif ()
+
+set( enable-scopetimer ON CACHE STRING "En/Disable ScopeTimer. [default=ON]" )
+if ( enable-scopetimer )
+  set( ENABLE_SCOPETIMER ON )
 endif ()
 
 include( GNUInstallDirs )

@@ -50,7 +50,7 @@ namespace timer
  *   the end of the program), it outputs the collected data to the     *
  *   std:cerr stream.                                                  *
  ***********************************************************************/
-#ifdef ENABLE_TIMING
+#if defined( ENABLE_TIMING ) && defined( ENABLE_SCOPETIMER )
 class ScopeTimeCollector
 {
 private:
@@ -76,6 +76,7 @@ private:
 
   mapping* _timing_data;
   uint64_t _threads;
+  Stopwatch _sw_overall;
 
 #ifdef _OPENMP
   omp_lock_t globalLock;
@@ -99,6 +100,7 @@ public:
     _threads = 1;
 #endif
     _timing_data = new mapping[ _threads ];
+    _sw_overall.start();
   }
 
   ~ScopeTimeCollector()
@@ -125,6 +127,8 @@ public:
 #ifdef _OPENMP
     omp_destroy_lock( &globalLock );
 #endif
+    _sw_overall.stop();
+    _sw_overall.print( "Complete execution took " );
   }
 
   /**
@@ -145,24 +149,25 @@ public:
 };
 /** global instance of the ScopeTimeCollector **/
 ScopeTimeCollector scopetimecollector;
-#endif /* ENABLE_TIMING */
+#endif /* #if defined( ENABLE_TIMING ) && defined( ENABLE_SCOPETIMER ) */
 }
 
+#if defined( ENABLE_TIMING ) && defined( ENABLE_SCOPETIMER )
 timer::ScopeTimer::ScopeTimer( const std::string& name )
-#ifdef ENABLE_TIMING
   : _name( name )
   , _stopwatch()
 {
   _stopwatch.start();
 }
 #else
+timer::ScopeTimer::ScopeTimer( const std::string& )
 {
 }
 #endif
 
 timer::ScopeTimer::~ScopeTimer()
 {
-#ifdef ENABLE_TIMING
+#if defined( ENABLE_TIMING ) && defined( ENABLE_SCOPETIMER )
   _stopwatch.stop();
   scopetimecollector.add( _name, _stopwatch.elapsed( Stopwatch::SECONDS ) );
 #endif

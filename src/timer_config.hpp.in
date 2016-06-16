@@ -26,3 +26,6 @@
 
 // En/Disable timing altogether. [default=ON]
 #cmakedefine ENABLE_TIMING 1
+
+// En/Disable ScopeTimer. [default=ON]
+#cmakedefine ENABLE_SCOPETIMER 1

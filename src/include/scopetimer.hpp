@@ -70,7 +70,7 @@ public:
   ~ScopeTimer();
 
 private:
-#ifdef ENABLE_TIMING
+#if defined( ENABLE_TIMING ) && defined( ENABLE_SCOPETIMER )
   std::string _name;
   Stopwatch _stopwatch;
 #endif

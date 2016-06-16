@@ -49,7 +49,7 @@ x.print("Time needed ", Stopwatch::MINUTES, std::cerr);
 
 ## ScopeTimer
 
-The ScopeTimer accumulates the elapsed times between creation and destruction of ScopeTimer objects with the same name. This can be very useful, if the overall execution time of a certain scope is to be measured, by creating a ScopeTimer at the start of a scope and relay on the destruction of the object at the end of the scope. The results are displayed automatically at the end of the program. This class is thread safe, as it measures the execution time separately for each thread (as long as threading is done via OpenMP). Thanks to Thorsten Hater for instpiration. A usage example:
+The `ScopeTimer` accumulates the elapsed times between creation and destruction of `ScopeTimer` objects with the same name. This can be very useful, if the overall execution time of a certain scope is to be measured, by creating a ScopeTimer at the start of a scope and relay on the destruction of the object at the end of the scope. The results are displayed automatically at the end of the program. This class is thread safe, as it measures the execution time separately for each thread (as long as threading is done via OpenMP). Thanks to Thorsten Hater for instpiration. A usage example:
 
 ```C++
 #include "scopetimer.hpp"
@@ -68,6 +68,8 @@ The ScopeTimer accumulates the elapsed times between creation and destruction of
                 in for-loop (calls    5) :: 29.156 sec.
            outside for-loop (calls    1) :: 29.1562 sec.
 ```
+
+The `ScopeTimer` maintains some globale state for managing the different scopes. if this is not desired, you can disable the `ScopeTimer` by configuring with `-Denable-scopetimer=OFF`.
 
 ## SeriesTimer
 
@@ -116,7 +118,8 @@ make install
 Further options:
 
 ```
-  -Denable_timing=[ON|OFF]   En/Disable timing altogether. [default=ON]
+  -Denable-timing=[ON|OFF]     En/Disable timing altogether. [default=ON]
+  -Denable-scopetimer=[ON|OFF] En/Disable ScopeTimer. [default=ON]
 ```
 
 # Linking
