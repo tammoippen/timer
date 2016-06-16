@@ -34,6 +34,7 @@
 
 namespace timer
 {
+
 /********************************************************************
  * ScopeTimer                                                       *
  *   Accumulates elapsed times between creation and                 *
@@ -42,7 +43,7 @@ namespace timer
  *   Usage example:                                                 *
  *   { // start of some scope                                       *
  *     ScopeTimer ot("outside for-loop");                           *
- *     for (int i = 0; i < 5; ++i)                                  *
+ *     for (int32_t i = 0; i < 5; ++i)                              *
  *     {                                                            *
  *       ScopeTimer t("in for loop");                               *
  *       // ... do computations for 5.83 sec each                   *

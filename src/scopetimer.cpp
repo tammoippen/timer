@@ -60,14 +60,14 @@ private:
    */
   struct SScopeData
   {
-    double dTime;
-    uint64_t lCall;
+    double time;
+    uint64_t num_calls;
 
     SScopeData&
     update( double time )
     {
-      dTime += time;
-      ++lCall;
+      this->time += time;
+      ++num_calls;
       return *this;
     }
   };
@@ -108,7 +108,7 @@ public:
         for ( it = _timing_data[ i ].begin(); it != _timing_data[ i ].end(); it++ )
         {
           std::cerr << std::setw( 30 ) << it->first.c_str() << " (calls " << std::setw( 4 )
-                    << it->second.lCall << ") :: " << std::setw( 18 ) << it->second.dTime << " sec."
+                    << it->second.num_calls << ") :: " << std::setw( 18 ) << it->second.time << " sec."
                     << std::endl;
         }
       }

@@ -47,7 +47,7 @@ namespace timer
  *                                                                      *
  *   Usage example:                                                     *
  *     SeriesTimer x;                                                   *
- *     for (int i = 0; i < 10; ++i)                                     *
+ *     for (int32_t i = 0; i < 10; ++i)                                 *
  *     {                                                                *
  *         x.start();                                                   *
  *         // do computation for about 1 sec ...                        *

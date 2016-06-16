@@ -169,7 +169,7 @@ timer::SeriesTimer::quantile( double q, Stopwatch::timeunit_t timeunit ) const
   // quantiles need sorting
   std::sort( local.begin(), local.end() );
   // select the index of quantile; in doubt select smaller one
-  int i = ( int ) std::ceil( q * local.size() ) - 1;
+  int32_t i = ( int32_t ) std::ceil( q * local.size() ) - 1;
   if ( i < 0 ) // if 0 is choosen, the calculation is -1
   {
     i = 0;
