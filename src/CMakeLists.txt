@@ -53,3 +53,6 @@ install( TARGETS timer_static timer_shared
 
 install( DIRECTORY include/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} )
+
+add_executable( example example.cpp )
+target_link_libraries( example timer_static )
