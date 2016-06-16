@@ -31,12 +31,45 @@ set( VERSION_MAJOR 1 )
 set( VERSION_MINOR 0 )
 
 set( enable_timing ON CACHE STRING "En/Disable timing altogether. [default=ON]" )
+if ( enable_timing )
+  set( ENABLE_TIMING ON )
+endif ()
 
 include( GNUInstallDirs )
+# on OS X
+set( CMAKE_MACOSX_RPATH ON )
 
 find_package( OpenMP )
 if ( OPENMP_FOUND )
   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}" )
 endif ()
 
+include( CheckIncludeFileCXX )
+check_include_file_cxx( "algorithm" HAVE_ALGORITHM )
+check_include_file_cxx( "cassert" HAVE_CASSERT )
+check_include_file_cxx( "cmath" HAVE_CMATH )
+check_include_file_cxx( "iomanip" HAVE_IOMANIP )
+check_include_file_cxx( "iostream" HAVE_IOSTREAM )
+check_include_file_cxx( "map" HAVE_MAP )
+check_include_file_cxx( "string" HAVE_STRING )
+check_include_file_cxx( "vector" HAVE_VECTOR )
+
+check_include_file_cxx( "stdint.h" HAVE_STDINT_H )
+check_include_file_cxx( "sys/time.h" HAVE_SYS_TIME_H )
+
+if ( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wformat -Wpointer-arith -Wwrite-strings" )
+endif ()
+
 add_subdirectory( src )
+
+find_program( CLANG_FORMAT
+    NAMES clang-format clang-format-3.6 clang-format-3.7 clang-format-3.8 clang-format-3.9 )
+
+if ( CLANG_FORMAT STREQUAL "CLANG_FORMAT-NOTFOUND" )
+    message( STATUS "No format target available as clang-format was not found.")
+else ()
+    add_custom_target( format
+        COMMAND ${CLANG_FORMAT} -i src/include/*.hpp src/*.cpp
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} )
+endif ()
