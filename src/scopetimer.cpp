@@ -54,109 +54,108 @@ namespace timer
 class ScopeTimeCollector
 {
 private:
-    /**
-     * Holds the data for ScopeTimer with same name
-     * and on the same thread.
-     */
-    struct SScopeData
+  /**
+   * Holds the data for ScopeTimer with same name
+   * and on the same thread.
+   */
+  struct SScopeData
+  {
+    double dTime;
+    uint64_t lCall;
+
+    SScopeData&
+    update( double time )
     {
-        double dTime;
-        uint64_t lCall;
+      dTime += time;
+      ++lCall;
+      return *this;
+    }
+  };
 
-        SScopeData& update(double time)
-        {
-            dTime += time;
-            ++lCall;
-            return *this;
-        }
-    };
+  typedef std::map< std::string, SScopeData > mapping;
 
-    typedef std::map<std::string, SScopeData> mapping;
-
-    mapping *_timing_data;
-    uint64_t _threads;
+  mapping* _timing_data;
+  uint64_t _threads;
 
 #ifdef _OPENMP
-    omp_lock_t   globalLock;
+  omp_lock_t globalLock;
 #endif
 
 public:
-    ScopeTimeCollector()
-    {
+  ScopeTimeCollector()
+  {
 #ifdef _OPENMP
-        _threads = omp_get_max_threads();
-        omp_init_lock(&globalLock);
+    _threads = omp_get_max_threads();
+    omp_init_lock( &globalLock );
 #else
-        _threads = 1;
+    _threads = 1;
 #endif
-        _timing_data = new mapping[_threads];
-    }
+    _timing_data = new mapping[ _threads ];
+  }
 
-    ~ScopeTimeCollector()
+  ~ScopeTimeCollector()
+  {
+    mapping::iterator it;
+    // foreach thread
+    for ( size_t i = 0; i < _threads; i++ )
     {
-        mapping::iterator it;
-        // foreach thread
-        for (size_t i = 0 ; i < _threads ; i++)
+      // if thread contains data
+      if ( _timing_data[ i ].size() > 0 )
+      {
+        std::cerr << std::endl << "\nCollected Timers for thread ";
+        std::cerr << std::setw( 2 ) << i << std::endl;
+        // output all timing data
+        for ( it = _timing_data[ i ].begin(); it != _timing_data[ i ].end(); it++ )
         {
-            // if thread contains data
-            if (_timing_data[i].size() > 0)
-            {
-                std::cerr << std::endl << "\nCollected Timers for thread ";
-                std::cerr << std::setw(2) << i << std::endl;
-                // output all timing data
-                for(it=_timing_data[i].begin(); 
-                    it != _timing_data[i].end(); 
-                    it++)
-                {
-                    std::cerr << std::setw(30) << it->first.c_str()
-                              << " (calls " 
-                              << std::setw(4) << it->second.lCall
-                              << ") :: " 
-                              << std::setw(18) << it->second.dTime
-                              << " sec." << std::endl;
-                }
-            }
+          std::cerr << std::setw( 30 ) << it->first.c_str() << " (calls " << std::setw( 4 )
+                    << it->second.lCall << ") :: " << std::setw( 18 ) << it->second.dTime << " sec."
+                    << std::endl;
         }
-        delete[] _timing_data;
-#ifdef _OPENMP
-        omp_destroy_lock(&globalLock);
-#endif
+      }
     }
+    delete[] _timing_data;
+#ifdef _OPENMP
+    omp_destroy_lock( &globalLock );
+#endif
+  }
 
-    /**
-     * Register/ add a measurement of a certain name.
-     */
-    void add(const std::string& name, double time)
-    {
+  /**
+   * Register/ add a measurement of a certain name.
+   */
+  void
+  add( const std::string& name, double time )
+  {
 #ifdef _OPENMP
-        omp_set_lock(&globalLock);
-        uint64_t tid = omp_get_thread_num();
-        _timing_data[tid][name] = _timing_data[tid][name].update(time);
-        omp_unset_lock(&globalLock);
+    omp_set_lock( &globalLock );
+    uint64_t tid = omp_get_thread_num();
+    _timing_data[ tid ][ name ] = _timing_data[ tid ][ name ].update( time );
+    omp_unset_lock( &globalLock );
 #else
-        _timing_data[0][name] = _timing_data[0][name].update(time);
+    _timing_data[ 0 ][ name ] = _timing_data[ 0 ][ name ].update( time );
 #endif
-    }
+  }
 };
 /** global instance of the ScopeTimeCollector **/
 ScopeTimeCollector scopetimecollector;
 #endif /* ENABLE_TIMING */
 }
 
-timer::ScopeTimer::ScopeTimer(const std::string& name)
+timer::ScopeTimer::ScopeTimer( const std::string& name )
 #ifdef ENABLE_TIMING
-: _name(name), _stopwatch()
+  : _name( name )
+  , _stopwatch()
 {
-    _stopwatch.start();
+  _stopwatch.start();
 }
 #else
-{}
+{
+}
 #endif
 
 timer::ScopeTimer::~ScopeTimer()
 {
 #ifdef ENABLE_TIMING
-    _stopwatch.stop();
-    scopetimecollector.add(_name, _stopwatch.elapsed(Stopwatch::SECONDS));
+  _stopwatch.stop();
+  scopetimecollector.add( _name, _stopwatch.elapsed( Stopwatch::SECONDS ) );
 #endif
 }

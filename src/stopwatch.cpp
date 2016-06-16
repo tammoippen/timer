@@ -31,29 +31,29 @@
 
 namespace timer
 {
-    std::ostream& operator<<(std::ostream& os,
-                         const Stopwatch& stopwatch)
-    {
-        stopwatch.print("", Stopwatch::SECONDS, os);
-        return os;
-    }
+std::ostream&
+operator<<( std::ostream& os, const Stopwatch& stopwatch )
+{
+  stopwatch.print( "", Stopwatch::SECONDS, os );
+  return os;
+}
 }
 
 timer::Stopwatch::Stopwatch()
 {
-    reset();
+  reset();
 }
 
 void
 timer::Stopwatch::start()
 {
 #ifdef ENABLE_TIMING
-    if(!isRunning())
-    {
-        _prev_elapsed += _end - _beg;  // store prev. time, if we resume
-        _end = _beg = get_timestamp(); // invariant: _end >= _beg
-        _running = true;               // we start running
-    }
+  if ( !isRunning() )
+  {
+    _prev_elapsed += _end - _beg;  // store prev. time, if we resume
+    _end = _beg = get_timestamp(); // invariant: _end >= _beg
+    _running = true;               // we start running
+  }
 #endif
 }
 
@@ -61,11 +61,11 @@ void
 timer::Stopwatch::stop()
 {
 #ifdef ENABLE_TIMING
-    if(isRunning())
-    {
-        _end = get_timestamp(); // invariant: _end >= _beg
-        _running = false;       // we stopped running
-    }
+  if ( isRunning() )
+  {
+    _end = get_timestamp(); // invariant: _end >= _beg
+    _running = false;       // we stopped running
+  }
 #endif
 }
 
@@ -73,20 +73,20 @@ bool
 timer::Stopwatch::isRunning() const
 {
 #ifdef ENABLE_TIMING
-    return _running;
+  return _running;
 #else
-    return false;
+  return false;
 #endif
 }
 
 double
-timer::Stopwatch::elapsed(timeunit_t timeunit) const
+timer::Stopwatch::elapsed( timeunit_t timeunit ) const
 {
 #ifdef ENABLE_TIMING
-    assert(correct_timeunit(timeunit));
-    return 1.0 * elapsed_timestamp() / timeunit;
+  assert( correct_timeunit( timeunit ) );
+  return 1.0 * elapsed_timestamp() / timeunit;
 #else
-    return 0.0;
+  return 0.0;
 #endif
 }
 
@@ -94,18 +94,18 @@ timer::Stopwatch::timestamp_t
 timer::Stopwatch::elapsed_timestamp() const
 {
 #ifdef ENABLE_TIMING
-    if(isRunning())
-    {
-        // get intermediate elapsed time; do not change _end, to be const
-        return get_timestamp() - _beg + _prev_elapsed;
-    }
-    else
-    {
-        // stopped before, get time of current measurment + last measurments
-        return _end - _beg + _prev_elapsed;
-    }
+  if ( isRunning() )
+  {
+    // get intermediate elapsed time; do not change _end, to be const
+    return get_timestamp() - _beg + _prev_elapsed;
+  }
+  else
+  {
+    // stopped before, get time of current measurment + last measurments
+    return _end - _beg + _prev_elapsed;
+  }
 #else
-    return (timestamp_t)0;
+  return ( timestamp_t ) 0;
 #endif
 }
 
@@ -113,49 +113,57 @@ void
 timer::Stopwatch::reset()
 {
 #ifdef ENABLE_TIMING
-    _beg = 0; // invariant: _end >= _beg
-    _end = 0;
-    _prev_elapsed = 0; // erase all prev. measurments
-    _running = false;  // of course not running.
+  _beg = 0; // invariant: _end >= _beg
+  _end = 0;
+  _prev_elapsed = 0; // erase all prev. measurments
+  _running = false;  // of course not running.
 #endif
 }
 
 void
-timer::Stopwatch::print(const char* msg, timeunit_t timeunit,
-                       std::ostream& os) const
+timer::Stopwatch::print( const char* msg, timeunit_t timeunit, std::ostream& os ) const
 {
 #ifdef ENABLE_TIMING
-    assert(correct_timeunit(timeunit));
-    double e = elapsed(timeunit);
-    os << msg << e;
-    switch (timeunit)
-    {
-        case MICROSEC: os << " microsec."; break;
-        case MILLISEC: os << " millisec."; break;
-        case SECONDS:  os << " sec."; break;
-        case MINUTES:  os << " min."; break;
-        case HOURS:    os << " h."; break;
-        case DAYS:     os << " days."; break;
-    }
+  assert( correct_timeunit( timeunit ) );
+  double e = elapsed( timeunit );
+  os << msg << e;
+  switch ( timeunit )
+  {
+    case MICROSEC:
+      os << " microsec.";
+      break;
+    case MILLISEC:
+      os << " millisec.";
+      break;
+    case SECONDS:
+      os << " sec.";
+      break;
+    case MINUTES:
+      os << " min.";
+      break;
+    case HOURS:
+      os << " h.";
+      break;
+    case DAYS:
+      os << " days.";
+      break;
+  }
 #ifndef NDEBUG
-    os << " (running: " << (_running ? "true" : "false")
-       << ", begin: "  << _beg
-       << ", end: "    << _end
-       << ", diff: "   << (_end - _beg)
-       << ", prev: "   << _prev_elapsed << ")";
+  os << " (running: " << ( _running ? "true" : "false" ) << ", begin: " << _beg << ", end: " << _end
+     << ", diff: " << ( _end - _beg ) << ", prev: " << _prev_elapsed << ")";
 #endif
-    os << std::endl;
+  os << std::endl;
 #endif
 }
 
 timer::Stopwatch::timestamp_t
-timer::Stopwatch::get_timestamp ()
+timer::Stopwatch::get_timestamp()
 {
-    // works with:
-    // * Linux 2.6.32 x86_64
-    // * MacOS 10.9
-    struct timeval now;
-    gettimeofday (&now, (struct timezone*)0);
-    return  (timer::Stopwatch::timestamp_t) now.tv_usec +
-            (timer::Stopwatch::timestamp_t) now.tv_sec  * timer::Stopwatch::SECONDS;
+  // works with:
+  // * Linux 2.6.32 x86_64
+  // * MacOS 10.9
+  struct timeval now;
+  gettimeofday( &now, ( struct timezone* ) 0 );
+  return ( timer::Stopwatch::timestamp_t ) now.tv_usec
+    + ( timer::Stopwatch::timestamp_t ) now.tv_sec * timer::Stopwatch::SECONDS;
 }

@@ -57,21 +57,21 @@ namespace timer
 class ScopeTimer
 {
 public:
-    /**
-     * Creates a ScopeTimer and starts the stopwatch.
-     */
-    ScopeTimer(const std::string& name);
+  /**
+   * Creates a ScopeTimer and starts the stopwatch.
+   */
+  ScopeTimer( const std::string& name );
 
-    /**
-     * Before destroying the timer, it stops the stopwatch and registers
-     * the elapsed time + its name to a global collector.
-     */
-    ~ScopeTimer();
+  /**
+   * Before destroying the timer, it stops the stopwatch and registers
+   * the elapsed time + its name to a global collector.
+   */
+  ~ScopeTimer();
 
 private:
 #ifdef ENABLE_TIMING
-    std::string _name;
-    Stopwatch _stopwatch;
+  std::string _name;
+  Stopwatch _stopwatch;
 #endif
 };
 

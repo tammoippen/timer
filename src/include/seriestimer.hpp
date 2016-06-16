@@ -73,74 +73,73 @@ namespace timer
 class SeriesTimer
 {
 public:
+  /**
+   * Creates a SeriesTimer that is not running.
+   */
+  SeriesTimer();
 
-    /**
-     * Creates a SeriesTimer that is not running.
-     */
-    SeriesTimer();
+  /**
+   * Beginns a new measurment for this SeriesTimer.
+   */
+  void start();
 
-    /**
-     * Beginns a new measurment for this SeriesTimer.
-     */
-    void start();
+  /**
+   * Stops the SeriesTimer and stores the resulting time.
+   */
+  void stop();
 
-    /**
-     * Stops the SeriesTimer and stores the resulting time.
-     */
-    void stop();
+  /**
+   * Returns, whether the SeriesTimer is running.
+   */
+  bool isRunning() const;
 
-    /**
-     * Returns, whether the SeriesTimer is running.
-     */
-    bool isRunning() const;
+  /**
+   * Resets the SeriesTimer.
+   */
+  void reset();
 
-    /**
-     * Resets the SeriesTimer.
-     */
-    void reset();
+  /**
+   * Returns the individual timings in the requested timeunit.
+   */
+  std::vector< double > timings( Stopwatch::timeunit_t timeunit = Stopwatch::SECONDS ) const;
 
-    /**
-     * Returns the individual timings in the requested timeunit.
-     */
-    std::vector<double> timings(Stopwatch::timeunit_t timeunit = Stopwatch::SECONDS) const;
+  /**
+   * Returns the total elapsed time of the series.
+   */
+  double sum( Stopwatch::timeunit_t timeunit = Stopwatch::SECONDS ) const;
 
-    /**
-     * Returns the total elapsed time of the series.
-     */
-    double sum(Stopwatch::timeunit_t timeunit = Stopwatch::SECONDS) const;
+  /**
+   * Returns the average time of the series.
+   */
+  double mean( Stopwatch::timeunit_t timeunit = Stopwatch::SECONDS ) const;
 
-    /**
-     * Returns the average time of the series.
-     */
-    double mean(Stopwatch::timeunit_t timeunit = Stopwatch::SECONDS) const;
+  /**
+   * Returns the standard deviation time of the series.
+   */
+  double std( Stopwatch::timeunit_t timeunit = Stopwatch::SECONDS ) const;
 
-    /**
-     * Returns the standard deviation time of the series.
-     */
-    double std(Stopwatch::timeunit_t timeunit = Stopwatch::SECONDS) const;
+  /**
+   * Returns the q-th quantile timing of the series.
+   */
+  double quantile( double q = 0.5, Stopwatch::timeunit_t timeunit = Stopwatch::SECONDS ) const;
 
-    /**
-     * Returns the q-th quantile timing of the series.
-     */
-    double quantile(double q = 0.5, Stopwatch::timeunit_t timeunit = Stopwatch::SECONDS) const;
+  /**
+   * This method prints out the currently elapsed time.
+   */
+  void print( const char* msg = "",
+    Stopwatch::timeunit_t timeunit = Stopwatch::SECONDS,
+    std::ostream& os = std::cout ) const;
 
-    /**
-     * This method prints out the currently elapsed time.
-     */
-    void print(const char* msg = "", Stopwatch::timeunit_t timeunit = Stopwatch::SECONDS,
-               std::ostream& os = std::cout) const;
-
-    /**
-     * Convenient method for writing time in seconds
-     * to some ostream.
-     */
-    friend std::ostream& operator<< (std::ostream& os,
-                                     const SeriesTimer& SeriesTimer);
+  /**
+   * Convenient method for writing time in seconds
+   * to some ostream.
+   */
+  friend std::ostream& operator<<( std::ostream& os, const SeriesTimer& SeriesTimer );
 
 private:
 #ifdef ENABLE_TIMING
-    Stopwatch _stopwatch;
-    std::vector<Stopwatch::timestamp_t>  _timestamps;
+  Stopwatch _stopwatch;
+  std::vector< Stopwatch::timestamp_t > _timestamps;
 #endif
 };
 

@@ -32,180 +32,203 @@
 
 namespace timer
 {
-    std::ostream& operator<<(std::ostream& os, 
-                         const SeriesTimer& seriestimer) 
-    {
-        seriestimer.print("", Stopwatch::SECONDS, os);
-        return os;
-    }
+std::ostream&
+operator<<( std::ostream& os, const SeriesTimer& seriestimer )
+{
+  seriestimer.print( "", Stopwatch::SECONDS, os );
+  return os;
+}
 }
 
 timer::SeriesTimer::SeriesTimer()
 #ifdef ENABLE_TIMING
-: _stopwatch(), _timestamps()
+  : _stopwatch()
+  , _timestamps()
 #endif
 {
 }
 
-void timer::SeriesTimer::start()
+void
+timer::SeriesTimer::start()
 {
 #ifdef ENABLE_TIMING
-    _stopwatch.start();
+  _stopwatch.start();
 #endif
 }
 
-void timer::SeriesTimer::stop()
+void
+timer::SeriesTimer::stop()
 {
 #ifdef ENABLE_TIMING
-    _stopwatch.stop();
-    _timestamps.push_back(_stopwatch.elapsed_timestamp());
-    _stopwatch.reset();
+  _stopwatch.stop();
+  _timestamps.push_back( _stopwatch.elapsed_timestamp() );
+  _stopwatch.reset();
 #endif
 }
 
-bool timer::SeriesTimer::isRunning() const
+bool
+timer::SeriesTimer::isRunning() const
 {
 #ifdef ENABLE_TIMING
-    return _stopwatch.isRunning();
+  return _stopwatch.isRunning();
 #endif
 }
 
-void timer::SeriesTimer::reset()
+void
+timer::SeriesTimer::reset()
 {
 #ifdef ENABLE_TIMING
-    _stopwatch.reset();
-    _timestamps.clear();
+  _stopwatch.reset();
+  _timestamps.clear();
 #endif
 }
 
-std::vector<double> timer::SeriesTimer::timings(Stopwatch::timeunit_t timeunit) const
+std::vector< double >
+timer::SeriesTimer::timings( Stopwatch::timeunit_t timeunit ) const
 {
-    #ifdef ENABLE_TIMING
-    assert(Stopwatch::correct_timeunit(timeunit));
-    std::vector<double> result(_timestamps.size());
-    // convert to vector of requestet timeunit
-    for (int i = 0; i < _timestamps.size(); ++i)
-    {
-        result[i] = 1.0 * _timestamps[i] / timeunit;
-    }
+#ifdef ENABLE_TIMING
+  assert( Stopwatch::correct_timeunit( timeunit ) );
+  std::vector< double > result( _timestamps.size() );
+  // convert to vector of requestet timeunit
+  for ( int i = 0; i < _timestamps.size(); ++i )
+  {
+    result[ i ] = 1.0 * _timestamps[ i ] / timeunit;
+  }
 
-    return result;
+  return result;
 #else
-    std::vector<double> v;
-    return v;
+  std::vector< double > v;
+  return v;
 #endif
 }
 
-double timer::SeriesTimer::sum(Stopwatch::timeunit_t timeunit) const
+double
+timer::SeriesTimer::sum( Stopwatch::timeunit_t timeunit ) const
 {
 #ifdef ENABLE_TIMING
-    assert(Stopwatch::correct_timeunit(timeunit));
-    double sum = 0.0;
-    for (int i = 0; i < _timestamps.size(); ++i)
-    {
-        sum += _timestamps[i];
-    }
-    return sum / timeunit;
+  assert( Stopwatch::correct_timeunit( timeunit ) );
+  double sum = 0.0;
+  for ( int i = 0; i < _timestamps.size(); ++i )
+  {
+    sum += _timestamps[ i ];
+  }
+  return sum / timeunit;
 #else
+  return 0.0;
+#endif
+}
+
+double
+timer::SeriesTimer::mean( Stopwatch::timeunit_t timeunit ) const
+{
+#ifdef ENABLE_TIMING
+  assert( Stopwatch::correct_timeunit( timeunit ) );
+  if ( !_timestamps.empty() )
+  {
+    return sum( timeunit ) / _timestamps.size();
+  }
+  else
+  {
     return 0.0;
-#endif
-}
-
-double timer::SeriesTimer::mean(Stopwatch::timeunit_t timeunit) const
-{
-#ifdef ENABLE_TIMING
-    assert(Stopwatch::correct_timeunit(timeunit));
-    if (! _timestamps.empty())
-    {
-        return sum(timeunit) / _timestamps.size();
-    }
-    else
-    {
-        return 0.0;
-    }
+  }
 #else
-    return 0.0;
+  return 0.0;
 #endif
 }
 
-double timer::SeriesTimer::std(Stopwatch::timeunit_t timeunit) const
+double
+timer::SeriesTimer::std( Stopwatch::timeunit_t timeunit ) const
 {
 #ifdef ENABLE_TIMING
-    assert(Stopwatch::correct_timeunit(timeunit));
-    double r = mean(timeunit);
-    double sum = 0;
-    double tmp;
+  assert( Stopwatch::correct_timeunit( timeunit ) );
+  double r = mean( timeunit );
+  double sum = 0;
+  double tmp;
 
-    for (int i = 0; i < _timestamps.size(); ++i)
-    {
-        tmp = 1.0 * _timestamps[i] / timeunit - r; // difference
-        sum += tmp * tmp; // squaring
-    }
-    // sqrt of sum of squared differences
-    return std::sqrt(sum / _timestamps.size());
+  for ( int i = 0; i < _timestamps.size(); ++i )
+  {
+    tmp = 1.0 * _timestamps[ i ] / timeunit - r; // difference
+    sum += tmp * tmp;                            // squaring
+  }
+  // sqrt of sum of squared differences
+  return std::sqrt( sum / _timestamps.size() );
 #else
-    return 0.0;
+  return 0.0;
 #endif
 }
 
-double timer::SeriesTimer::quantile(double q, Stopwatch::timeunit_t timeunit) const
+double
+timer::SeriesTimer::quantile( double q, Stopwatch::timeunit_t timeunit ) const
 {
 #ifdef ENABLE_TIMING
-    assert(Stopwatch::correct_timeunit(timeunit));
-    assert(q >= 0.0); // not smaller than min
-    assert(q <= 1.0); // not larger than max
-    std::vector<Stopwatch::timestamp_t> local = _timestamps;
+  assert( Stopwatch::correct_timeunit( timeunit ) );
+  assert( q >= 0.0 ); // not smaller than min
+  assert( q <= 1.0 ); // not larger than max
+  std::vector< Stopwatch::timestamp_t > local = _timestamps;
 
-    // quantiles need sorting
-    std::sort(local.begin(), local.end());
-    // select the index of quantile; in doubt select smaller one
-    int i = (int) std::ceil(q * local.size()) - 1;
-    if (i < 0) // if 0 is choosen, the calculation is -1
-    {
-        i = 0;
-    }
-    return 1.0 * local[i] / timeunit; // return correct timeunit
+  // quantiles need sorting
+  std::sort( local.begin(), local.end() );
+  // select the index of quantile; in doubt select smaller one
+  int i = ( int ) std::ceil( q * local.size() ) - 1;
+  if ( i < 0 ) // if 0 is choosen, the calculation is -1
+  {
+    i = 0;
+  }
+  return 1.0 * local[ i ] / timeunit; // return correct timeunit
 #else
-    return 0.0;
+  return 0.0;
 #endif
 }
 
-void timer::SeriesTimer::print(const char* msg, Stopwatch::timeunit_t timeunit, 
-               std::ostream& os) const
+void
+timer::SeriesTimer::print( const char* msg, Stopwatch::timeunit_t timeunit, std::ostream& os ) const
 {
 #ifdef ENABLE_TIMING
-    assert(Stopwatch::correct_timeunit(timeunit));
-    
-    os << msg;
-    switch (timeunit)
-    {
-        case Stopwatch::MICROSEC: os << "(microsec) ["; break;
-        case Stopwatch::MILLISEC: os << "(millisec) ["; break;
-        case Stopwatch::SECONDS:  os << "(sec) ["; break;
-        case Stopwatch::MINUTES:  os << "(min) ["; break;
-        case Stopwatch::HOURS:    os << "(h) ["; break;
-        case Stopwatch::DAYS:     os << "(days) ["; break;
-        default: return;
-    }
-    std::vector<double> t = timings(timeunit);
-    for (int i = 0; i < t.size(); ++i)
-    {
-        if (i != 0)
-        {
-            os << ", "; 
-        }
-        os << t[i];
-    }
-    os << " ] " << std::endl;
+  assert( Stopwatch::correct_timeunit( timeunit ) );
 
-    os << "Statistics: "<< std::endl;
-    os << "              sum = " << sum(timeunit) << std::endl;
-    os << "             mean = " << mean(timeunit) << std::endl;
-    os << "              std = " << std(timeunit) << std::endl;
-    os << "      q 0\% (min) = " << quantile(0.0, timeunit) << std::endl;
-    os << "           q 25\% = " << quantile(0.25, timeunit) << std::endl;
-    os << "  q 50\% (median) = " << quantile(0.5, timeunit) << std::endl;
-    os << "           q 75\% = " << quantile(0.75, timeunit) << std::endl;
-    os << "    q 100\% (max) = " << quantile(1.0, timeunit) << std::endl;
+  os << msg;
+  switch ( timeunit )
+  {
+    case Stopwatch::MICROSEC:
+      os << "(microsec) [";
+      break;
+    case Stopwatch::MILLISEC:
+      os << "(millisec) [";
+      break;
+    case Stopwatch::SECONDS:
+      os << "(sec) [";
+      break;
+    case Stopwatch::MINUTES:
+      os << "(min) [";
+      break;
+    case Stopwatch::HOURS:
+      os << "(h) [";
+      break;
+    case Stopwatch::DAYS:
+      os << "(days) [";
+      break;
+    default:
+      return;
+  }
+  std::vector< double > t = timings( timeunit );
+  for ( int i = 0; i < t.size(); ++i )
+  {
+    if ( i != 0 )
+    {
+      os << ", ";
+    }
+    os << t[ i ];
+  }
+  os << " ] " << std::endl;
+
+  os << "Statistics: " << std::endl;
+  os << "              sum = " << sum( timeunit ) << std::endl;
+  os << "             mean = " << mean( timeunit ) << std::endl;
+  os << "              std = " << std( timeunit ) << std::endl;
+  os << "      q 0\% (min) = " << quantile( 0.0, timeunit ) << std::endl;
+  os << "           q 25\% = " << quantile( 0.25, timeunit ) << std::endl;
+  os << "  q 50\% (median) = " << quantile( 0.5, timeunit ) << std::endl;
+  os << "           q 75\% = " << quantile( 0.75, timeunit ) << std::endl;
+  os << "    q 100\% (max) = " << quantile( 1.0, timeunit ) << std::endl;
 #endif
 }
