@@ -1,34 +1,40 @@
-/*
- *  seriestimer.h
+/**
+ * seriestimer.hpp
  *
- *  This file is part of NEST.
+ * The MIT License (MIT)
  *
- *  Copyright (C) 2004 The NEST Initiative
+ * Copyright (c) 2016 Tammo Ippen
  *
- *  NEST is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- *  NEST is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with NEST.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 #ifndef SERIES_TIMER_H
 #define SERIES_TIMER_H
 
-#include <stdint.h>
 #include <iostream>
+#include <stdint.h>
 #include <vector>
-#include "stopwatch.h"
 
-namespace nest
+#include "stopwatch.hpp"
+#include "timer_config.hpp"
+
+namespace timer
 {
 
 /************************************************************************
@@ -67,18 +73,18 @@ namespace nest
 class SeriesTimer
 {
 public:
-    
-    /** 
+
+    /**
      * Creates a SeriesTimer that is not running.
      */
     SeriesTimer();
-    
-    /** 
+
+    /**
      * Beginns a new measurment for this SeriesTimer.
      */
     void start();
-    
-    /** 
+
+    /**
      * Stops the SeriesTimer and stores the resulting time.
      */
     void stop();
@@ -88,12 +94,12 @@ public:
      */
     bool isRunning() const;
 
-    /** 
+    /**
      * Resets the SeriesTimer.
      */
     void reset();
 
-    /** 
+    /**
      * Returns the individual timings in the requested timeunit.
      */
     std::vector<double> timings(Stopwatch::timeunit_t timeunit = Stopwatch::SECONDS) const;
@@ -117,18 +123,18 @@ public:
      * Returns the q-th quantile timing of the series.
      */
     double quantile(double q = 0.5, Stopwatch::timeunit_t timeunit = Stopwatch::SECONDS) const;
-    
-    /** 
+
+    /**
      * This method prints out the currently elapsed time.
      */
-    void print(const char* msg = "", Stopwatch::timeunit_t timeunit = Stopwatch::SECONDS, 
+    void print(const char* msg = "", Stopwatch::timeunit_t timeunit = Stopwatch::SECONDS,
                std::ostream& os = std::cout) const;
-    
+
     /**
      * Convenient method for writing time in seconds
      * to some ostream.
      */
-    friend std::ostream& operator<< (std::ostream& os, 
+    friend std::ostream& operator<< (std::ostream& os,
                                      const SeriesTimer& SeriesTimer);
 
 private:

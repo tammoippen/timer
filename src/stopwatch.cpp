@@ -1,46 +1,51 @@
-/*
- *  stopwatch.cpp
+/**
+ * stopwatch.cpp
  *
- *  This file is part of NEST.
+ * The MIT License (MIT)
  *
- *  Copyright (C) 2004 The NEST Initiative
+ * Copyright (c) 2016 Tammo Ippen
  *
- *  NEST is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 2 of the License, or
- *  (at your option) any later version.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- *  NEST is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with NEST.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
-#include "stopwatch.h"
-#include <sys/time.h>
-#include <cassert>
+#include "stopwatch.hpp"
 
-namespace nest
+#include <cassert>
+#include <sys/time.h>
+
+namespace timer
 {
-    std::ostream& operator<<(std::ostream& os, 
-                         const Stopwatch& stopwatch) 
+    std::ostream& operator<<(std::ostream& os,
+                         const Stopwatch& stopwatch)
     {
         stopwatch.print("", Stopwatch::SECONDS, os);
         return os;
     }
 }
 
-nest::Stopwatch::Stopwatch() 
+timer::Stopwatch::Stopwatch()
 {
     reset();
 }
 
 void
-nest::Stopwatch::start()
+timer::Stopwatch::start()
 {
 #ifdef ENABLE_TIMING
     if(!isRunning())
@@ -53,7 +58,7 @@ nest::Stopwatch::start()
 }
 
 void
-nest::Stopwatch::stop()
+timer::Stopwatch::stop()
 {
 #ifdef ENABLE_TIMING
     if(isRunning())
@@ -64,8 +69,8 @@ nest::Stopwatch::stop()
 #endif
 }
 
-bool 
-nest::Stopwatch::isRunning() const
+bool
+timer::Stopwatch::isRunning() const
 {
 #ifdef ENABLE_TIMING
     return _running;
@@ -74,8 +79,8 @@ nest::Stopwatch::isRunning() const
 #endif
 }
 
-double 
-nest::Stopwatch::elapsed(timeunit_t timeunit) const
+double
+timer::Stopwatch::elapsed(timeunit_t timeunit) const
 {
 #ifdef ENABLE_TIMING
     assert(correct_timeunit(timeunit));
@@ -85,8 +90,8 @@ nest::Stopwatch::elapsed(timeunit_t timeunit) const
 #endif
 }
 
-nest::Stopwatch::timestamp_t 
-nest::Stopwatch::elapsed_timestamp() const
+timer::Stopwatch::timestamp_t
+timer::Stopwatch::elapsed_timestamp() const
 {
 #ifdef ENABLE_TIMING
     if(isRunning())
@@ -105,7 +110,7 @@ nest::Stopwatch::elapsed_timestamp() const
 }
 
 void
-nest::Stopwatch::reset() 
+timer::Stopwatch::reset()
 {
 #ifdef ENABLE_TIMING
     _beg = 0; // invariant: _end >= _beg
@@ -115,8 +120,8 @@ nest::Stopwatch::reset()
 #endif
 }
 
-void 
-nest::Stopwatch::print(const char* msg, timeunit_t timeunit, 
+void
+timer::Stopwatch::print(const char* msg, timeunit_t timeunit,
                        std::ostream& os) const
 {
 #ifdef ENABLE_TIMING
@@ -132,7 +137,7 @@ nest::Stopwatch::print(const char* msg, timeunit_t timeunit,
         case HOURS:    os << " h."; break;
         case DAYS:     os << " days."; break;
     }
-#ifdef DEBUG
+#ifndef NDEBUG
     os << " (running: " << (_running ? "true" : "false")
        << ", begin: "  << _beg
        << ", end: "    << _end
@@ -143,14 +148,14 @@ nest::Stopwatch::print(const char* msg, timeunit_t timeunit,
 #endif
 }
 
-nest::Stopwatch::timestamp_t
-nest::Stopwatch::get_timestamp ()
+timer::Stopwatch::timestamp_t
+timer::Stopwatch::get_timestamp ()
 {
     // works with:
-    // * hambach (Linux 2.6.32 x86_64)
+    // * Linux 2.6.32 x86_64
     // * MacOS 10.9
     struct timeval now;
     gettimeofday (&now, (struct timezone*)0);
-    return  (nest::Stopwatch::timestamp_t) now.tv_usec + 
-            (nest::Stopwatch::timestamp_t) now.tv_sec  * nest::Stopwatch::SECONDS;
+    return  (timer::Stopwatch::timestamp_t) now.tv_usec +
+            (timer::Stopwatch::timestamp_t) now.tv_sec  * timer::Stopwatch::SECONDS;
 }

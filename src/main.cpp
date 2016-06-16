@@ -1,12 +1,12 @@
 #include <iostream>
 
-#include "scopetimer.h"
-#include "stopwatch.h"
-#include "seriestimer.h"
+#include "scopetimer.hpp"
+#include "stopwatch.hpp"
+#include "seriestimer.hpp"
 #include <unistd.h>
 
 using namespace std;
-using namespace nest;
+using namespace timer;
 
 unsigned long fib(size_t n) {
     //ScopeTimer f("inFib");
