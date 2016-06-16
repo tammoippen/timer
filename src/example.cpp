@@ -46,7 +46,7 @@ fib( size_t n )
 }
 
 int
-main( int32_t argc, char const* argv[] )
+main( int32_t, char const** )
 {
   SeriesTimer y;
 #pragma omp parallel num_threads( 4 )

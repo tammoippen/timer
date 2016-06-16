@@ -81,6 +81,14 @@ private:
   omp_lock_t globalLock;
 #endif
 
+  // C++ 03
+  // ========
+  // Dont forget to declare these two. You want to make sure they
+  // are unacceptable otherwise you may accidentally get copies of
+  // your singleton appearing.
+  ScopeTimeCollector( ScopeTimeCollector const& ); // Don't Implement
+  void operator=( ScopeTimeCollector const& );     // Don't implement
+
 public:
   ScopeTimeCollector()
   {
@@ -105,11 +113,11 @@ public:
         std::cerr << std::endl << "\nCollected Timers for thread ";
         std::cerr << std::setw( 2 ) << i << std::endl;
         // output all timing data
-        for ( it = _timing_data[ i ].begin(); it != _timing_data[ i ].end(); it++ )
+        for ( it = _timing_data[ i ].begin(); it != _timing_data[ i ].end(); ++it )
         {
           std::cerr << std::setw( 30 ) << it->first.c_str() << " (calls " << std::setw( 4 )
-                    << it->second.num_calls << ") :: " << std::setw( 18 ) << it->second.time << " sec."
-                    << std::endl;
+                    << it->second.num_calls << ") :: " << std::setw( 18 ) << it->second.time
+                    << " sec." << std::endl;
         }
       }
     }

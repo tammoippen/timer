@@ -143,12 +143,11 @@ timer::SeriesTimer::std( Stopwatch::timeunit_t timeunit ) const
   assert( Stopwatch::correct_timeunit( timeunit ) );
   double r = mean( timeunit );
   double sum = 0;
-  double tmp;
 
   for ( size_t i = 0; i < _timestamps.size(); ++i )
   {
-    tmp = 1.0 * _timestamps[ i ] / timeunit - r; // difference
-    sum += tmp * tmp;                            // squaring
+    double tmp = 1.0 * _timestamps[ i ] / timeunit - r; // difference
+    sum += tmp * tmp;                                   // squaring
   }
   // sqrt of sum of squared differences
   return std::sqrt( sum / _timestamps.size() );

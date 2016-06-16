@@ -61,7 +61,7 @@ public:
   /**
    * Creates a ScopeTimer and starts the stopwatch.
    */
-  ScopeTimer( const std::string& name );
+  explicit ScopeTimer( const std::string& name );
 
   /**
    * Before destroying the timer, it stops the stopwatch and registers
