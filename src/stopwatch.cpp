@@ -159,9 +159,6 @@ timer::Stopwatch::print( const char* msg, timeunit_t timeunit, std::ostream& os 
 timer::Stopwatch::timestamp_t
 timer::Stopwatch::get_timestamp()
 {
-  // works with:
-  // * Linux 2.6.32 x86_64
-  // * MacOS 10.9
   struct timeval now;
   gettimeofday( &now, ( struct timezone* ) 0 );
   return ( timer::Stopwatch::timestamp_t ) now.tv_usec
