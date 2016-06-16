@@ -90,7 +90,7 @@ timer::SeriesTimer::timings( Stopwatch::timeunit_t timeunit ) const
   assert( Stopwatch::correct_timeunit( timeunit ) );
   std::vector< double > result( _timestamps.size() );
   // convert to vector of requestet timeunit
-  for ( int i = 0; i < _timestamps.size(); ++i )
+  for ( size_t i = 0; i < _timestamps.size(); ++i )
   {
     result[ i ] = 1.0 * _timestamps[ i ] / timeunit;
   }
@@ -108,7 +108,7 @@ timer::SeriesTimer::sum( Stopwatch::timeunit_t timeunit ) const
 #ifdef ENABLE_TIMING
   assert( Stopwatch::correct_timeunit( timeunit ) );
   double sum = 0.0;
-  for ( int i = 0; i < _timestamps.size(); ++i )
+  for ( size_t i = 0; i < _timestamps.size(); ++i )
   {
     sum += _timestamps[ i ];
   }
@@ -123,7 +123,7 @@ timer::SeriesTimer::mean( Stopwatch::timeunit_t timeunit ) const
 {
 #ifdef ENABLE_TIMING
   assert( Stopwatch::correct_timeunit( timeunit ) );
-  if ( !_timestamps.empty() )
+  if ( not _timestamps.empty() )
   {
     return sum( timeunit ) / _timestamps.size();
   }
@@ -145,7 +145,7 @@ timer::SeriesTimer::std( Stopwatch::timeunit_t timeunit ) const
   double sum = 0;
   double tmp;
 
-  for ( int i = 0; i < _timestamps.size(); ++i )
+  for ( size_t i = 0; i < _timestamps.size(); ++i )
   {
     tmp = 1.0 * _timestamps[ i ] / timeunit - r; // difference
     sum += tmp * tmp;                            // squaring
@@ -211,7 +211,7 @@ timer::SeriesTimer::print( const char* msg, Stopwatch::timeunit_t timeunit, std:
       return;
   }
   std::vector< double > t = timings( timeunit );
-  for ( int i = 0; i < t.size(); ++i )
+  for ( size_t i = 0; i < t.size(); ++i )
   {
     if ( i != 0 )
     {
@@ -225,10 +225,10 @@ timer::SeriesTimer::print( const char* msg, Stopwatch::timeunit_t timeunit, std:
   os << "              sum = " << sum( timeunit ) << std::endl;
   os << "             mean = " << mean( timeunit ) << std::endl;
   os << "              std = " << std( timeunit ) << std::endl;
-  os << "      q 0\% (min) = " << quantile( 0.0, timeunit ) << std::endl;
-  os << "           q 25\% = " << quantile( 0.25, timeunit ) << std::endl;
-  os << "  q 50\% (median) = " << quantile( 0.5, timeunit ) << std::endl;
-  os << "           q 75\% = " << quantile( 0.75, timeunit ) << std::endl;
-  os << "    q 100\% (max) = " << quantile( 1.0, timeunit ) << std::endl;
+  os << "       q 0% (min) = " << quantile( 0.0, timeunit ) << std::endl;
+  os << "            q 25% = " << quantile( 0.25, timeunit ) << std::endl;
+  os << "   q 50% (median) = " << quantile( 0.5, timeunit ) << std::endl;
+  os << "            q 75% = " << quantile( 0.75, timeunit ) << std::endl;
+  os << "     q 100% (max) = " << quantile( 1.0, timeunit ) << std::endl;
 #endif
 }

@@ -27,8 +27,10 @@
 cmake_minimum_required( VERSION 2.8.12 )
 project( timer CXX )
 
-set( VERSION_MAJOR 1 )
-set( VERSION_MINOR 0 )
+set( TIMER_VERSION_MAJOR 1 )
+set( TIMER_VERSION_MINOR 0 )
+set( TIMER_VERSION_PATCH 0 )
+set( TIMER_VERSION ${TIMER_VERSION_MAJOR}.${TIMER_VERSION_MINOR}.${TIMER_VERSION_PATCH} )
 
 set( enable_timing ON CACHE STRING "En/Disable timing altogether. [default=ON]" )
 if ( enable_timing )
@@ -36,8 +38,14 @@ if ( enable_timing )
 endif ()
 
 include( GNUInstallDirs )
+
+# RPATH related stuff
 # on OS X
 set( CMAKE_MACOSX_RPATH ON )
+set( CMAKE_SKIP_RPATH FALSE )
+set( CMAKE_SKIP_BUILD_RPATH FALSE )
+set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
+set( CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE )
 
 find_package( OpenMP )
 if ( OPENMP_FOUND )

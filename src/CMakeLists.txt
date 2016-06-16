@@ -40,7 +40,9 @@ add_library( timer_shared SHARED ${timer_src} )
 add_library( timer_static STATIC ${timer_src} )
 
 set_target_properties( timer_shared
-    PROPERTIES OUTPUT_NAME timer )
+    PROPERTIES OUTPUT_NAME timer
+               VERSION ${TIMER_VERSION}
+               SOVERSION ${TIMER_VERSION_MAJOR} )
 
 set_target_properties( timer_static
     PROPERTIES OUTPUT_NAME timer )
