@@ -75,9 +75,19 @@ find_program( CLANG_FORMAT
     NAMES clang-format clang-format-3.6 clang-format-3.7 clang-format-3.8 clang-format-3.9 )
 
 if ( CLANG_FORMAT STREQUAL "CLANG_FORMAT-NOTFOUND" )
-    message( STATUS "No format target available as clang-format was not found.")
+    message( STATUS "No `format` target available as clang-format was not found.")
 else ()
     add_custom_target( format
         COMMAND ${CLANG_FORMAT} -i src/include/*.hpp src/*.cpp
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} )
+endif ()
+
+find_program( CPPCHECK cppcheck )
+
+if ( CPPCHECK STREQUAL "CPPCHECK-NOTFOUND" )
+    message( STATUS "No `cppcheck` target available as cppcheck was not found.")
+else ()
+    add_custom_target( cppcheck
+        COMMAND ${CPPCHECK} --inconclusive --enable=all -I src/include src
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} )
 endif ()
