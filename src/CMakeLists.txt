@@ -36,9 +36,16 @@ set( timer_src
 
 include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/include" )
 
-add_library( timer ${timer_src} )
+add_library( timer_shared SHARED ${timer_src} )
+add_library( timer_static STATIC ${timer_src} )
 
-install( TARGETS timer
+set_target_properties( timer_shared
+    PROPERTIES OUTPUT_NAME timer )
+
+set_target_properties( timer_static
+    PROPERTIES OUTPUT_NAME timer )
+
+install( TARGETS timer_static timer_shared
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} )
 
